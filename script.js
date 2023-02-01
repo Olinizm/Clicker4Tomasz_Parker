@@ -14,7 +14,7 @@
                 this.level++;
                 post_upgrade(this)
                 document.getElementById("castle_level").innerHTML = "Kingdom lvl "+this.level;
-                document.getElementById("castle").src = "castle/zamek"+this.level+".png";
+                document.getElementById("castle").src = "assets/castle/zamek"+this.level+".png";
                 this.gold_req *= this.level;
                 this.gold_req += 400;
                 this.wood_req = 0;
@@ -191,19 +191,19 @@
             //we check if a certain resuorce is needed so we can add it's picture to display
             if (resource.wood_req > 0)
             {
-                mats += resource.wood_req + "<img height='15px' src='resources/wood.png'>";
+                mats += resource.wood_req + "<img height='15px' src='assets/resources/wood.png'>";
             }
             if (resource.stone_req > 0)
             {
-                mats += resource.stone_req + "<img height='15px' src='resources/kamien.png'>";
+                mats += resource.stone_req + "<img height='15px' src='assets/resources/kamien.png'>";
             }
             if (resource.planks_req > 0)
             {
-                mats += resource.planks_req + "<img height='15px' src='resources/deski.png'>";
+                mats += resource.planks_req + "<img height='15px' src='assets/resources/deski.png'>";
             }
             if (resource.gold_req > 0)
             {
-                mats += resource.gold_req + "<img height='15px' src='resources/monety.png'>";
+                mats += resource.gold_req + "<img height='15px' src='assets/resources/monety.png'>";
             }
             document.getElementById(resource.name+"_upmats").innerHTML = mats;
 
@@ -256,7 +256,7 @@
                 document.getElementById(resource.name+"_level3").innerHTML = "production: "+resource.level+"/click, "+((resource.level+1)*resource.workers)+"/turn";
             }
             //changing the building when upgraded
-            var buildpath = resource.building+"/"+resource.building+resource.level+".png";
+            var buildpath = "assets/"+resource.building+"/"+resource.building+resource.level+".png";
             document.getElementById(resource.building).src = buildpath;
         }
         //updates the displayed amount of the resource passed in
@@ -275,7 +275,7 @@
             turnworkers(planks);
             turnworkers(marble);
             gold += (workers*5);
-            document.getElementById("money").innerHTML = "treasury: " + gold + "<img height='15px' src='resources/monety.png'>";
+            document.getElementById("money").innerHTML = "treasury: " + gold + "<img height='15px' src='assets/resources/monety.png'>";
             fish.amount -= workers;
             stock_update(fish);
             //checks if you're starving people (but seriously don't starve people)

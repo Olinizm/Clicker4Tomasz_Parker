@@ -30,11 +30,11 @@
         <main>
             <div id="overview">
                 <div class="left">
-                    <img src="castle/zamek1.png" id="castle" height="610px">
+                    <img src="assets/castle/zamek1.png" id="castle" height="610px">
                 </div>
                 <div class="right">
                     <h1 id="castle_level">Kingdom lvl 1</h1>
-                    <h3 id="money">treasury: 0<img height='15px' src='resources/monety.png'></h3>
+                    <h3 id="money">treasury: 0<img height='15px' src='assets/resources/monety.png'></h3>
                     <h3 id="workers">workers: 0</h3> <br>
                     <table>
                         <tr><th>resource</th><th>stock</th><th>level</th><th>workers</th></tr>
@@ -45,17 +45,17 @@
                         <tr><td>food</td><td id="fish_amount">0</td><td id="fish_level">lvl 1</td><td id="fish_workers">1</td></tr>
                     </table><br>
                     <button style="font-size: 20px; font-weight: bold;" onclick="castle.upgrade()">upgrade castle</button><br style="display: block; content: ''; margin-bottom: 20px;">
-                    <label>required resources: </label><h3 style="display: block;" id="castle_upmats">100<img height="15px" src="resources/wood.png">80<img height="15px" src="resources/kamien.png">200<img height="15px" src="resources/monety.png"></h3>
+                    <label>required resources: </label><h3 style="display: block;" id="castle_upmats">100<img height="15px" src="assets/resources/wood.png">80<img height="15px" src="assets/resources/kamien.png">200<img height="15px" src="assets/resources/monety.png"></h3>
                 </div>
             </div>
             <div id="map">
                 <div class="left">
                     <table>
-                        <tr><td width="30%"><button onclick="buildingpage('wood_cutter')"><img id="drwal" src="drwal/drwal1.png" height="185px"></button></td>
-                            <td width="30%"></td><td><button onclick="buildingpage('mason')"><img id="kamieniolom" src="kamieniolom/kamieniolom1.png" height="185px"></button></td></tr>
-                        <tr><td></td><td><button onclick="buildingpage('sawmill')"><img id="tartakigla" src="tartakigla/tartakigla1.png" height="185px"></button></td>
-                            <td><button onclick="buildingpage('fisherman')"><img id="rybak" src="rybak/rybak1.png" height="185px"></td></tr>
-                        <tr><td><button onclick="buildingpage('marbleson')"><img id="marmurolom" src="marmurolom/marmurolom1.png" height="185px"></td></tr>
+                        <tr><td width="30%"><button onclick="buildingpage('wood_cutter')"><img id="drwal" src="assets/drwal/drwal1.png" height="185px"></button></td>
+                            <td width="30%"></td><td><button onclick="buildingpage('mason')"><img id="kamieniolom" src="assets/kamieniolom/kamieniolom1.png" height="185px"></button></td></tr>
+                        <tr><td></td><td><button onclick="buildingpage('sawmill')"><img id="tartakigla" src="assets/tartakigla/tartakigla1.png" height="185px"></button></td>
+                            <td><button onclick="buildingpage('fisherman')"><img id="rybak" src="assets/rybak/rybak1.png" height="185px"></td></tr>
+                        <tr><td><button onclick="buildingpage('marbleson')"><img id="marmurolom" src="assets/marmurolom/marmurolom1.png" height="185px"></td></tr>
                     </table>
                 </div>
                 <div class="right">
@@ -65,54 +65,54 @@
                     </div>
                     <div id="wood_cutter">
                         <h1>woodcutter's hut </h1><h1 id="wood_level2">lvl 1</h1><br style="margin-top: 20px;">
-                        <label>upgrade materials: </label><h4 id="wood_upmats">40<img height="15px" src="resources/wood.png"> 40<img height="15px" src="resources/kamien.png"></h4><br>
+                        <label>upgrade materials: </label><h4 id="wood_upmats">40<img height="15px" src="assets/resources/wood.png"> 40<img height="15px" src="assets/resources/kamien.png"></h4><br>
                         <h4 id="wood_castle">requires castle lvl 1</h4> <button onclick="wood.upgrade()">upgrade!</button> <br>
                         <label id="wood_stock">stock: 0</label> <button onclick="wood.chop()">chop wood</button><br>
-                        <h4 id="wood_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/wood.png"><br>
+                        <h4 id="wood_level3">production: 1/click, 0/turn</h4><img height="15px" src="assets/resources/wood.png"><br>
                         
                         <h4 id="wood_workers2">workers: 0</h4><br>
-                        <button onclick="addworkers(wood)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                        <button onclick="addworkers(wood)">hire workers</button><h4> requires 100<img height='15px' src='assets/resources/monety.png'></h4>
                     </div>
                     <div id="mason">
                         <h1>Mason </h1><h1 id="stone_level2">lvl 1</h1><br style="margin-top: 20px;">
-                        <label>upgrade materials: </label> <h4 id="stone_upmats">60<img height="15px" src="resources/wood.png"> 80<img height="15px" src="resources/kamien.png"></h4><br>
+                        <label>upgrade materials: </label> <h4 id="stone_upmats">60<img height="15px" src="assets/resources/wood.png"> 80<img height="15px" src="assets/resources/kamien.png"></h4><br>
                         <h4 id="stone_castle">requires castle lvl 1</h4> <button onclick="stone.upgrade()">upgrade!</button> <br>
                         <label id="stone_stock">stock: 0</label> <button onclick="stone.mine()">mine stone</button><br>
-                        <h4 id="stone_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/kamien.png"><br>
+                        <h4 id="stone_level3">production: 1/click, 0/turn</h4><img height="15px" src="assets/resources/kamien.png"><br>
                         
                         <h4 id="stone_workers2">workers: 0</h4><br>
-                        <button onclick="addworkers(stone)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                        <button onclick="addworkers(stone)">hire workers</button><h4> requires 100<img height='15px' src='assets/resources/monety.png'></h4>
                     </div>
                     <div id="sawmill">
                         <h1>Sawmill </h1><h1 id="planks_level2">lvl 1</h1><br style="margin-top: 20px;">
-                        <label>upgrade materials</label> <h4 id="planks_upmats">80<img height="15px" src="resources/wood.png"> 100<img height="15px" src="resources/kamien.png">40<img height="15px" src="resources/deski.png"></h4><br>
+                        <label>upgrade materials</label> <h4 id="planks_upmats">80<img height="15px" src="assets/resources/wood.png"> 100<img height="15px" src="assets/resources/kamien.png">40<img height="15px" src="assets/resources/deski.png"></h4><br>
                         <h4 id="planks_castle">requires castle lvl 1</h4> <button onclick="planks.upgrade()">upgrade!</button> <br>
                         <label id="planks_stock">stock: 0</label> <button onclick="planks.make()">make planks</button><br>
-                        <h4 id="planks_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/deski.png"><br>
-                        <h4>1 wood <img height="15px" src="resources/wood.png"> -> </h4><h4 id="planks_level4">1 plank</h4><img height="15px" src="resources/deski.png"><br>
+                        <h4 id="planks_level3">production: 1/click, 0/turn</h4><img height="15px" src="assets/resources/deski.png"><br>
+                        <h4>1 wood <img height="15px" src="assets/resources/wood.png"> -> </h4><h4 id="planks_level4">1 plank</h4><img height="15px" src="assets/resources/deski.png"><br>
                         
                         <h4 id="planks_workers2">workers: 0</h4><br>
-                        <button onclick="addworkers(planks)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                        <button onclick="addworkers(planks)">hire workers</button><h4> requires 100<img height='15px' src='assets/resources/monety.png'></h4>
                     </div>
                     <div id="fisherman">
                         <h1>Fisherman </h1><h1 id="fish_level2">lvl 1</h1><br style="margin-top: 20px;">
-                        <label>upgrade materials</label> <h4 id="fish_upmats">60<img height="15px" src="resources/wood.png"> 40<img height="15px" src="resources/deski.png"></h4><br>
+                        <label>upgrade materials</label> <h4 id="fish_upmats">60<img height="15px" src="assets/resources/wood.png"> 40<img height="15px" src="assets/resources/deski.png"></h4><br>
                         <h4 id="fish_castle">requires castle lvl 1</h4> <button onclick="fish.upgrade()">upgrade!</button> <br>
                         <label id="fish_stock">stock: 0</label><br>
-                        <h4 id="fish_level3">production: 2/turn</h4> <img height="15px" src="resources/ryba.png"><br>
+                        <h4 id="fish_level3">production: 2/turn</h4> <img height="15px" src="assets/resources/ryba.png"><br>
                         
                         <h4 id="fish_workers2">workers: 1</h4><br>
-                        <button onclick="addworkers(fish)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                        <button onclick="addworkers(fish)">hire workers</button><h4> requires 100<img height='15px' src='assets/resources/monety.png'></h4>
                     </div>
                     <div id="marbleson">
                         <h1>Marble mason </h1><h1 id="marble_level2">lvl 1</h1><br style="margin-top: 20px;">
-                        <label>upgrade materials</label> <h4 id="marble_upmats">120<img height="15px" src="resources/kamien.png">80<img height="15px" src="resources/deski.png"></h4><br>
+                        <label>upgrade materials</label> <h4 id="marble_upmats">120<img height="15px" src="assets/resources/kamien.png">80<img height="15px" src="assets/resources/deski.png"></h4><br>
                         <h4 id="marble_castle">requires castle lvl 2</h4> <button onclick="marble.upgrade()">upgrade!</button> <br>
                         <label id="marble_stock">stock: 0</label> <button onclick="marble.marmine()">mine</button><br>
-                        <h4 id="marble_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/marmur.png"><br>
+                        <h4 id="marble_level3">production: 1/click, 0/turn</h4><img height="15px" src="assets/resources/marmur.png"><br>
                         
                         <h4 id="marble_workers2">workers: 0</h4><br>
-                        <button onclick="addworkers(marble)">hire workers</button> <h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                        <button onclick="addworkers(marble)">hire workers</button> <h4> requires 100<img height='15px' src='assets/resources/monety.png'></h4>
                     </div>
                 </div>
             </div>
