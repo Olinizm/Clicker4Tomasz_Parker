@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clicker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script>
+        var active_page = "overview";
+        var active_building = "empty";
+        var gold = 0;
+        var workers = 1;
+
+        var castle = {
+            name: "castle",
+            level: 1,
+            wood_req: 100,
+            planks_req: 0,
+            stone_req: 80,
+            gold_req: 200,
+            upgrade: function() {
+                if (wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4 || gold < this.gold_req)
+                {
+                    return;
+                }
+                this.level++;
+                post_upgrade(this)
+                document.getElementById("castle_level").innerHTML = "Kingdom lvl "+this.level;
+                document.getElementById("castle").src = "castle/zamek"+this.level+".png";
+                this.gold_req *= this.level;
+                this.gold_req += 400;
+                this.wood_req = 0;
+                this.stone_req *= 4;
+                this.planks_req = this.planks_req *2 + 200;
+                upgrademats_update(this);
+            }
+            
+        }
+
+        var wood = {
+            name: "wood",
+            building: "drwal",
+            amount: 0,
+            level: 1,
+            workers: 0,
+            wood_req: 40,
+            planks_req: 0,
+            stone_req: 40,
+            gold_req: 0,
+            castle_req: 1,
+            chop: function() {
+                this.amount += this.level;
+                stock_update(this);
+            },
+            upgrade: function() {
+                if (castle.level < this.castle_req || wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4)
+                {
+                    return;
+                }
+                this.level++;
+                this.castle_req++;
+                post_upgrade(this);
+                this.wood_req *= 2;
+                this.stone_req *= 2;
+                this.planks_req += 40;
+                upgrademats_update(this);
+            }
+        };
+        var stone = {
+            name: "stone",
+            building: "kamieniolom",
+            amount: 0,
+            level: 1,
+            workers: 0,
+            wood_req: 60,
+            stone_req: 80,
+            planks_req: 0,
+            gold_req: 0,
+            castle_req: 1,
+            mine: function() {
+                this.amount += this.level;
+                stock_update(this);
+            },
+            upgrade: function() {
+                if (wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4)
+                {
+                    return;
+                }
+                this.level++;
+                this.castle_req++;
+                post_upgrade(this);
+                this.wood_req = 0;
+                this.stone_req *= 2;
+                this.planks_req = this.planks_req * 3 + 60;
+                upgrademats_update(this);
+            }
+        };
+
+        var fish = {
+            name: "fish",
+            building: "rybak",
+            amount: 0,
+            level: 1,
+            workers: 1,
+            wood_req: 60,
+            stone_req: 0,
+            planks_req: 40,
+            gold_req: 0,
+            castle_req: 1,
+            upgrade: function() {
+                if (wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4)
+                {
+                    return;
+                }
+                this.level++;
+                this.castle_req++;
+                post_upgrade(this);
+                this.wood_req += 40;
+                this.planks_req *= 2;
+                upgrademats_update(this);
+            }
+            
+        };
+        
+        var marble = {
+            name: "marble",
+            building: "marmurolom",
+            amount: 0,
+            level: 1,
+            workers: 0,
+            wood_req: 0,
+            planks_req: 80,
+            stone_req: 120,
+            gold_req: 0,
+            castle_req: 2,
+            marmine: function() {
+                this.amount += this.level;
+                stock_update(this);
+            },
+            upgrade: function() {
+                if (wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4)
+                {
+                    return;
+                }
+                this.level++;
+                this.castle_req++;
+                post_upgrade(this);
+                this.stone_req *= 3;
+                this.planks_req = this.planks_req*2 + 40;
+                upgrademats_update(this);
+            }
+        };
+        var planks = {
+            name: "planks",
+            building: "tartakigla",
+            amount: 0,
+            level: 1,
+            workers: 0,
+            wood_req: 80,
+            stone_req: 100,
+            planks_req: 40,
+            gold_req: 0,
+            castle_req: 1,
+            make: function() {
+                if (wood.amount<1)
+                    return;
+                this.amount += this.level;
+                wood.amount--;
+                stock_update(this);
+                stock_update(wood);
+            },
+            upgrade: function() {
+                if (wood.amount < this.wood_req || stone.amount < this.stone_req || planks.amount < this.planks_req || this.level == 4)
+                {
+                    return;
+                }
+                this.level++;
+                this.castle_req++;
+                post_upgrade(this);
+                this.wood_req *= 2;
+                this.stone_req *= 2;
+                this.planks_req += 120;
+                upgrademats_update(this);
+            }
+        };
+
+        
+        //recalculates and displays the currently owned materials after an upgrade
+        function post_upgrade(resource)
+        {
+            wood.amount -= resource.wood_req;
+            stone.amount -= resource.stone_req;
+            planks.amount -= resource.planks_req;
+            if (resource.name != "castle")
+                level_update(resource);
+            stock_update(wood);
+            stock_update(stone);
+            stock_update(planks);
+        }
+        function upgrademats_update(resource)
+        {
+            var mats = "";
+            //we check if a certain resuorce is needed so we can add it's picture to display
+            if (resource.wood_req > 0)
+            {
+                mats += resource.wood_req + "<img height='15px' src='resources/wood.png'>";
+            }
+            if (resource.stone_req > 0)
+            {
+                mats += resource.stone_req + "<img height='15px' src='resources/kamien.png'>";
+            }
+            if (resource.planks_req > 0)
+            {
+                mats += resource.planks_req + "<img height='15px' src='resources/deski.png'>";
+            }
+            if (resource.gold_req > 0)
+            {
+                mats += resource.gold_req + "<img height='15px' src='resources/monety.png'>";
+            }
+            document.getElementById(resource.name+"_upmats").innerHTML = mats;
+
+            if (resource.name == "castle")
+            {
+                //castle doesn't have castle requirements so we don't modify it
+                //instead when it reaches max level we display it over the required mats
+                if (resource.level == 4)
+                    document.getElementById(resource.name+"_upmats").innerHTML = "max upgrade reached";
+                return;
+            }
+            if (resource.level == 4 || resource.name == "marble" && resource.level == 3)
+            {
+                //the max upgrade message is displayed over the castle requirements, while mats are cleared
+                document.getElementById(resource.name+"_castle").innerHTML = "max upgrade reached";
+                document.getElementById(resource.name+"_upmats").innerHTML = "";
+                return;
+            }
+            
+            document.getElementById(resource.name+"_castle").innerHTML = "requires castle lvl "+ resource.castle_req;
+        }
+
+        function level_update(resource)
+        {
+            if (resource.level == 4 || resource.name == "marble" && resource.level == 3)
+            {
+                //level 4 is the max level of every building except for marble mason
+                document.getElementById(resource.name+"_level").innerHTML = "MAX lvl";
+                document.getElementById(resource.name+"_level2").innerHTML = "MAX lvl";
+            }
+            else
+            {
+                document.getElementById(resource.name+"_level").innerHTML = "lvl "+resource.level;
+                document.getElementById(resource.name+"_level2").innerHTML = "lvl "+resource.level;
+            }
+
+            if (resource.name == "fish")
+            {
+                //you can't fish manualy
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+((resource.level+1)*resource.workers)+"/turn";
+            }
+            else if (resource.name == "planks")
+            {
+                //planks have extra convertion line we need to change
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+resource.level+"/click, "+((resource.level+1)*resource.workers)+"/turn";
+                document.getElementById(resource.name+"_level4").innerHTML = resource.level+" planks";
+            }
+            else
+            {
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+resource.level+"/click, "+((resource.level+1)*resource.workers)+"/turn";
+            }
+            //changing the building when upgraded
+            var buildpath = resource.building+"/"+resource.building+resource.level+".png";
+            document.getElementById(resource.building).src = buildpath;
+        }
+        //updates the displayed amount of the resource passed in
+        function stock_update(resource)
+        {
+            document.getElementById(resource.name+"_amount").innerHTML = resource.amount;
+            document.getElementById(resource.name+"_stock").innerHTML = "stock: "+resource.amount;
+        }
+
+        //function to recalculate resources every 2 seconds
+        function turnend()
+        {
+            turnworkers(fish);
+            turnworkers(wood);
+            turnworkers(stone);
+            turnworkers(planks);
+            turnworkers(marble);
+            gold += (workers*5);
+            document.getElementById("money").innerHTML = "treasury: " + gold + "<img height='15px' src='resources/monety.png'>";
+            fish.amount -= workers;
+            stock_update(fish);
+            //checks if you're starving people (but seriously don't starve people)
+            if (fish.amount < 0)
+            {
+                alert("you were overthrown by your people, apparently food is necessary for survival");
+                document.location.reload();
+            }
+        }
+
+        //adding resources based on workers
+        function turnworkers(type)
+        {
+            type.amount += type.workers * (type.level+1);
+            stock_update(type);
+            
+        }
+        //function called when hiring worker, updates variables and workers displayed
+        function addworkers(resource)
+        {
+            if (gold < 100)
+            {
+                return;
+            }
+            gold -= 100;
+            workers++;
+            document.getElementById("workers").innerHTML = "workers: "+workers;
+            resource.workers++;
+            document.getElementById(resource.name+"_workers").innerHTML = resource.workers;
+            document.getElementById(resource.name+"_workers2").innerHTML = "workers: "+resource.workers;
+            //updating resource per turn
+            if (resource.name == "fish")
+            {
+                //you can't fish manualy
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+((resource.level+1)*resource.workers)+"/turn";
+            }
+            else if (resource.name == "planks")
+            {
+                //planks have extra convertion line we need to change
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+resource.level+"/click, "+((resource.level+1)*resource.workers)+"/turn";
+                document.getElementById(resource.name+"_level4").innerHTML = resource.level+" planks";
+            }
+            else
+            {
+                document.getElementById(resource.name+"_level3").innerHTML = "production: "+resource.level+"/click, "+((resource.level+1)*resource.workers)+"/turn";
+            }
+        }
+        //changes active page leaving the nav untouched
+        function openpage(change)
+        {
+            document.getElementById(active_page).style.display = "none";
+            document.getElementById(change).style.display = "block";
+            active_page = change;
+        }
+        //changes the building escription on the right
+        function buildingpage(change)
+        {
+            document.getElementById(active_building).style.display = "none";
+            document.getElementById(change).style.display = "block";
+            active_building = change;
+        }
+        function code_redeem(frm)
+        {
+            if (frm.code.value == "motherlode")
+            {
+                gold += 50000;
+                frm.code.value = "code redeemed";
+            }
+            else
+            {
+                frm.code.value = "invalid code";
+            }
+        }
+    </script>
+
+    <div id="container">
+        <nav>
+            <label>Clicker Kingdom</label>
+            
+            <ul>
+                <li><button type="button" onclick="openpage('overview')">overview</button></li>
+                <li><button type="button" onclick="openpage('map')">map</button></li>
+                <li><button type="button" onclick="openpage('settings')">guide</button></li>
+                <li><button type="button" onclick="openpage('redemption')">code redemption</button></li>
+            </ul>
+        </nav>
+        <main>
+            <div id="overview">
+                <div class="left">
+                    <img src="castle/zamek1.png" id="castle" height="610px">
+                </div>
+                <div class="right">
+                    <h1 id="castle_level">Kingdom lvl 1</h1>
+                    <h3 id="money">treasury: 0<img height='15px' src='resources/monety.png'></h3>
+                    <h3 id="workers">workers: 0</h3> <br>
+                    <table>
+                        <tr><th>resource</th><th>stock</th><th>level</th><th>workers</th></tr>
+                        <tr><td>wood</td><td id="wood_amount">0</td><td id="wood_level">lvl 1</td><td id="wood_workers">0</td></tr>
+                        <tr><td>planks</td><td id="planks_amount">0</td><td id="planks_level">lvl 1</td><td id="planks_workers">0</td></tr>
+                        <tr><td>stone</td><td id="stone_amount">0</td><td id="stone_level">lvl 1</td><td id="stone_workers">0</td></tr>
+                        <tr><td>marble</td><td id="marble_amount">0</td><td id="marble_level">lvl 1</td><td id="marble_workers">0</td></tr>
+                        <tr><td>food</td><td id="fish_amount">0</td><td id="fish_level">lvl 1</td><td id="fish_workers">1</td></tr>
+                    </table><br>
+                    <button style="font-size: 20px; font-weight: bold;" onclick="castle.upgrade()">upgrade castle</button><br style="display: block; content: ''; margin-bottom: 20px;">
+                    <label>required resources: </label><h3 style="display: block;" id="castle_upmats">100<img height="15px" src="resources/wood.png">80<img height="15px" src="resources/kamien.png">200<img height="15px" src="resources/monety.png"></h3>
+                </div>
+            </div>
+            <div id="map">
+                <div class="left">
+                    <table>
+                        <tr><td width="30%"><button onclick="buildingpage('wood_cutter')"><img id="drwal" src="drwal/drwal1.png" height="185px"></button></td>
+                            <td width="30%"></td><td><button onclick="buildingpage('mason')"><img id="kamieniolom" src="kamieniolom/kamieniolom1.png" height="185px"></button></td></tr>
+                        <tr><td></td><td><button onclick="buildingpage('sawmill')"><img id="tartakigla" src="tartakigla/tartakigla1.png" height="185px"></button></td>
+                            <td><button onclick="buildingpage('fisherman')"><img id="rybak" src="rybak/rybak1.png" height="185px"></td></tr>
+                        <tr><td><button onclick="buildingpage('marbleson')"><img id="marmurolom" src="marmurolom/marmurolom1.png" height="185px"></td></tr>
+                    </table>
+                </div>
+                <div class="right">
+                    
+                    <div id="empty">
+                        <h1>Clcik on a building <br>to manage it's recources</h1>
+                    </div>
+                    <div id="wood_cutter">
+                        <h1>woodcutter's hut </h1><h1 id="wood_level2">lvl 1</h1><br style="margin-top: 20px;">
+                        <label>upgrade materials: </label><h4 id="wood_upmats">40<img height="15px" src="resources/wood.png"> 40<img height="15px" src="resources/kamien.png"></h4><br>
+                        <h4 id="wood_castle">requires castle lvl 1</h4> <button onclick="wood.upgrade()">upgrade!</button> <br>
+                        <label id="wood_stock">stock: 0</label> <button onclick="wood.chop()">chop wood</button><br>
+                        <h4 id="wood_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/wood.png"><br>
+                        
+                        <h4 id="wood_workers2">workers: 0</h4><br>
+                        <button onclick="addworkers(wood)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                    </div>
+                    <div id="mason">
+                        <h1>Mason </h1><h1 id="stone_level2">lvl 1</h1><br style="margin-top: 20px;">
+                        <label>upgrade materials: </label> <h4 id="stone_upmats">60<img height="15px" src="resources/wood.png"> 80<img height="15px" src="resources/kamien.png"></h4><br>
+                        <h4 id="stone_castle">requires castle lvl 1</h4> <button onclick="stone.upgrade()">upgrade!</button> <br>
+                        <label id="stone_stock">stock: 0</label> <button onclick="stone.mine()">mine stone</button><br>
+                        <h4 id="stone_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/kamien.png"><br>
+                        
+                        <h4 id="stone_workers2">workers: 0</h4><br>
+                        <button onclick="addworkers(stone)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                    </div>
+                    <div id="sawmill">
+                        <h1>Sawmill </h1><h1 id="planks_level2">lvl 1</h1><br style="margin-top: 20px;">
+                        <label>upgrade materials</label> <h4 id="planks_upmats">80<img height="15px" src="resources/wood.png"> 100<img height="15px" src="resources/kamien.png">40<img height="15px" src="resources/deski.png"></h4><br>
+                        <h4 id="planks_castle">requires castle lvl 1</h4> <button onclick="planks.upgrade()">upgrade!</button> <br>
+                        <label id="planks_stock">stock: 0</label> <button onclick="planks.make()">make planks</button><br>
+                        <h4 id="planks_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/deski.png"><br>
+                        <h4>1 wood <img height="15px" src="resources/wood.png"> -> </h4><h4 id="planks_level4">1 plank</h4><img height="15px" src="resources/deski.png"><br>
+                        
+                        <h4 id="planks_workers2">workers: 0</h4><br>
+                        <button onclick="addworkers(planks)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                    </div>
+                    <div id="fisherman">
+                        <h1>Fisherman </h1><h1 id="fish_level2">lvl 1</h1><br style="margin-top: 20px;">
+                        <label>upgrade materials</label> <h4 id="fish_upmats">60<img height="15px" src="resources/wood.png"> 40<img height="15px" src="resources/deski.png"></h4><br>
+                        <h4 id="fish_castle">requires castle lvl 1</h4> <button onclick="fish.upgrade()">upgrade!</button> <br>
+                        <label id="fish_stock">stock: 0</label><br>
+                        <h4 id="fish_level3">production: 2/turn</h4> <img height="15px" src="resources/ryba.png"><br>
+                        
+                        <h4 id="fish_workers2">workers: 1</h4><br>
+                        <button onclick="addworkers(fish)">hire workers</button><h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                    </div>
+                    <div id="marbleson">
+                        <h1>Marble mason </h1><h1 id="marble_level2">lvl 1</h1><br style="margin-top: 20px;">
+                        <label>upgrade materials</label> <h4 id="marble_upmats">120<img height="15px" src="resources/kamien.png">80<img height="15px" src="resources/deski.png"></h4><br>
+                        <h4 id="marble_castle">requires castle lvl 2</h4> <button onclick="marble.upgrade()">upgrade!</button> <br>
+                        <label id="marble_stock">stock: 0</label> <button onclick="marble.marmine()">mine</button><br>
+                        <h4 id="marble_level3">production: 1/click, 0/turn</h4><img height="15px" src="resources/marmur.png"><br>
+                        
+                        <h4 id="marble_workers2">workers: 0</h4><br>
+                        <button onclick="addworkers(marble)">hire workers</button> <h4> requires 100<img height='15px' src='resources/monety.png'></h4>
+                    </div>
+                </div>
+            </div>
+            <div id="settings">
+                <div class="left">
+                    <img src="guide/1.png" height="200px" style="float: right;">
+                    <img src="guide/2.png" height="160px" style="float: right; margin-top: 40px;">
+                </div>
+                <div class="right">
+                    <h3 style="margin: 40px;">Click on a building to open it's corresponding resource page</h3>
+                    <h3 style="margin: 40px;">There you can manualy collect resources, or hire workers to do it for you</h3>
+                    <h3 style="margin: 40px;">Hiring a worker costs 100 gold, but they also pay you taxes 5gold/turn</h3>
+                    <h3 style="margin: 40px;">Every worker consumes 1 unit of food per turn, and generate resources based on bulding level</h3>
+                    <h3 style="margin: 40px;">Turn lasts around 2 seconds, and you lose if your workers starve, good luck</h3>
+                </div>
+            </div>
+            <div id="redemption">
+                <form onsubmit="return false">
+                    code:<input name="code" type="text"><input type="button" value="redeem" onclick="code_redeem(this.form)">
+                </form>
+                
+                <p>try sims codes like motherlode</p>
+            </div>
+        </main>
+        <footer>
+            made by Aleksandra Cybułka
+        </footer>
+        <script>
+            setInterval(turnend, 2000);
+        </script>
+    </div>
+
+    
+</body>
+</html>
